@@ -13,6 +13,9 @@ ChatRWKV is like ChatGPT but powered by my RWKV (100% RNN) language model, which
 
 
 
+# 可视化使用方法
+  - 运行chat.py 进行对话,对话一次保存一次
+  - chat.py 的48行 进行配置保存视频路径以及视频尺度和帧率 videoWrite = cv2.VideoWriter(r'test.mp4', fourcc, 8, (1000, 1000)) 
 
 
 # 7B 模型ffn层可视化
