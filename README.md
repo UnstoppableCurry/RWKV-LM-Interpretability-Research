@@ -1,4 +1,5 @@
-# Project code from  ChatRWKV introduce
+ 	# Project code from  ChatRWKV introduce
+
 
 ChatRWKV is like ChatGPT but powered by my RWKV (100% RNN) language model, which is the only RNN (as of now) that can match transformers in quality and scaling, while being faster and saves VRAM. Training sponsored by Stability EleutherAI :)
 
