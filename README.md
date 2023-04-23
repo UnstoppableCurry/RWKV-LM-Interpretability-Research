@@ -93,16 +93,12 @@ ChatRWKV is like ChatGPT but powered by my RWKV (100% RNN) language model, which
 2.不同大小的模型可视化
 为了探讨不同模型大小对outlier的影响我做了后续的可视化
 ![1B5](https://user-images.githubusercontent.com/65523997/233818846-a5d7cd39-6ba9-421a-873e-58d341adfd0c.gif)
-
- # ![1B5 fp32](https://img-blog.csdnimg.cn/f90f23b96ae941079f198c8f9cd77bb0.gif)
 1b5 fp32
-# ![请添加图片描述](https://img-blog.csdnimg.cn/5528b49f2ac34e519f38394883965283.gif)
+
 ![1b5fp16](https://user-images.githubusercontent.com/65523997/233818854-7f62eb14-71e4-47ff-a683-25c709b6c6d4.gif)
-
 1b5 fp16
-#![请添加图片描述](https://img-blog.csdnimg.cn/99993f0d34e34365888175b85195a51b.gif)
-![7b](https://user-images.githubusercontent.com/65523997/233818859-a0a04c46-528f-4453-8981-a6c4f79c4fad.gif)
 
+![7b fp16](https://user-images.githubusercontent.com/65523997/233818859-a0a04c46-528f-4453-8981-a6c4f79c4fad.gif)
 7b fp16
 ## 单从可视化结果中可以得到3个结论
  - 结论一: 模型越大 outlier 情况越少
