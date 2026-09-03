@@ -1,5 +1,13 @@
 # Project code from  ChatRWKV introduce
 
+> ## 研究展示页（静态说明，不能在浏览器里运行模型）
+>
+> **https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/**
+>
+> 该页面只转述本 README 与仓库源码里写明的问题、方法、实验和观察，不新增分数或论文状态。本地可视化请继续用下面的 `python chat.py`。
+
+
+
 
 ChatRWKV is like ChatGPT but powered by my RWKV (100% RNN) language model, which is the only RNN (as of now) that can match transformers in quality and scaling, while being faster and saves VRAM. Training sponsored by Stability EleutherAI :)
 

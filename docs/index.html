@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RWKV-LM 可解释性研究展示 · FFN 离群响应实验记录</title>
+  <meta name="description" content="本仓库是 RWKV-4 / ChatRWKV 的本地可解释性实验记录：收集 FFN 层输出并做三维可视化。页面为静态说明，不能在浏览器中运行模型。不包含论文发表状态或本仓库未给出的分数。">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#1c1916">
+  <link rel="canonical" href="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="RWKV-LM 可解释性研究展示">
+  <meta property="og:description" content="关于 RWKV FFN 层离群响应的可视化观察与未完成的定量计划。静态说明页，非浏览器可运行演示。">
+  <meta property="og:url" content="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/">
+  <meta property="og:image" content="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/assets/ChatRWKV.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RWKV-LM 可解释性研究展示">
+  <meta name="twitter:description" content="RWKV FFN 离群响应的本地实验记录。静态页面，不在浏览器中推理。">
+  <meta name="twitter:image" content="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/assets/ChatRWKV.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "RWKV-LM 可解释性研究展示",
+    "inLanguage": "zh-Hans",
+    "url": "https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/",
+    "description": "RWKV-4 FFN 层离群响应的本地可视化实验说明。静态页面，不能在浏览器中运行模型。",
+    "isPartOf": {
+      "@type": "SoftwareSourceCode",
+      "name": "RWKV-LM-Interpretability-Research",
+      "codeRepository": "https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "programmingLanguage": "Python"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span class="brand-text">
+          <strong>RWKV-LM Interpretability</strong>
+          <span>静态研究说明 · 非在线演示</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="本页章节">
+        <a href="#question">问题</a>
+        <a href="#method">方法</a>
+        <a href="#experiments">实验</a>
+        <a href="#figures">仓库图片</a>
+        <a href="#findings">观察</a>
+        <a href="#limits">局限</a>
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top">
+      <p class="kicker">Experiment log · not a paper page</p>
+      <h1>RWKV FFN 离群响应：一份本地可视化实验记录</h1>
+      <p class="lede">
+        本仓库在 ChatRWKV / RWKV-4 推理路径上收集各层 FFN 输出，并用三维折线画成视频。
+        它依赖 Python、本地下载的权重，以及通常需要的 GPU，<strong>不能在浏览器里加载或对话</strong>。
+        本页只转述 README 与源码里写明的内容，不补充论文状态、分数或未写出的结论。
+      </p>
+      <ul class="chip-row" aria-label="页面性质">
+        <li><span class="chip warn">浏览器不可运行</span></li>
+        <li><span class="chip">Apache-2.0</span></li>
+        <li><span class="chip">基于 ChatRWKV 推理代码</span></li>
+        <li><span class="chip ok">中文说明为主</span></li>
+      </ul>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research">打开仓库</a>
+        <a class="button ghost" href="./README.html">阅读本页依据说明</a>
+      </div>
+    </section>
+
+    <section class="section wrap" id="question" aria-labelledby="question-title">
+      <h2 id="question-title"><span>01</span>研究问题</h2>
+      <p>
+        README 从社区讨论写起：有人想看 RWKV FFN 层响应可视化，作者随后贴出效果图，曲线上能看到明显偏大的峰值。
+        讨论里有人把这种图叫做「脑电图」；README 把它当作各通道上的离散响应，而不是连续生理信号，并把这些峰值称为 <strong>outlier（离群点）</strong>。
+      </p>
+      <p>在此观察之上，README 提出的问题可以收成两句：</p>
+      <div class="grid-2">
+        <article class="card">
+          <h3>规模与精度</h3>
+          <p>不同模型大小、以及 fp16 / fp32 这类精度变化，会怎样改变 FFN 响应里的 outlier？</p>
+        </article>
+        <article class="card">
+          <h3>涌现 / 顿悟</h3>
+          <p>
+            「如果这样的 outlier 对语言模型很重要，而模型还拥有涌现能力与顿悟，那么他们之间有什么联系？」
+            README 同时写明：目前没有太好的思路来验证这件事，需要在训练过程中统计，并对照多任务指标。
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="method" aria-labelledby="method-title">
+      <h2 id="method-title"><span>02</span>方法</h2>
+      <p>方法全部落在本地推理脚本里，而不是网页前端。</p>
+      <div class="grid-3">
+        <article class="card">
+          <h3>收集 FFN 输出</h3>
+          <p>
+            <code>src/model_run.py</code> 的 <code>RWKV_RNN.forward</code> 在每一层算出 FFN 后，把 <code>ffn_out</code> 追加到 <code>all_ffn_out</code>，再与 logits、<code>state</code> 一起返回。
+          </p>
+        </article>
+        <article class="card">
+          <h3>对话时画三维折线</h3>
+          <p>
+            <code>chat.py</code> 在生成过程中用 matplotlib 画 <code>channel × value</code>，按 layer 沿另一轴堆叠，再用 OpenCV 把帧写入 mp4。
+            README 说明在约第 48 行配置 <code>VideoWriter</code> 的路径、帧率与分辨率。
+          </p>
+        </article>
+        <article class="card">
+          <h3>额外统计函数</h3>
+          <p>
+            <code>chat_interpretability.py</code> 对每层 FFN 计算与标准正态的平方差、标准差、方差、<code>torch.kl_div</code>，以及 99% 分位裁剪。
+            仓库里没有这些量的结果表。
+          </p>
+        </article>
+      </div>
+      <h3>源码里需要如实写出的缺口</h3>
+      <div class="callout">
+        <p>
+          <code>chat_interpretability.py</code> 会把 <code>outlier=</code> 传给 <code>model.forward</code>，但当前 <code>src/model_run.py</code> 的 <code>forward</code> 只接受 <code>tokens</code>、<code>state</code>、<code>preprocess_only</code>。
+          同一脚本还 <code>import options</code>，而仓库中没有 <code>options.py</code>。
+          因此该脚本应按「未完成的扩展」而不是「可直接复现的完整流水线」来理解。
+        </p>
+      </div>
+    </section>
+
+    <section class="section wrap" id="experiments" aria-labelledby="experiments-title">
+      <h2 id="experiments-title"><span>03</span>实验</h2>
+      <p>README「如何得出结论」一节写明了可视化时的控制条件，以及作者实际对比过的设置。</p>
+      <article class="card">
+        <h3>已写明的可视化对照</h3>
+        <ul>
+          <li>全部输入一致，提示为：</li>
+        </ul>
+        <pre class="prompt">What is python? Please tell me in detail what it is, how to use it, how to learn it, and what advantages and disadvantages it has.</pre>
+        <ul>
+          <li>对照设置：1B5 fp32、1B5 fp16、7B fp16。</li>
+          <li>README 写明「模型输出不可控」。</li>
+          <li>7B fp32：README 写「3090 单卡跑不了，后续会补上」。本页不把它写成已完成实验。</li>
+        </ul>
+      </article>
+      <h3>README 里的定量计划，不是已发表结果</h3>
+      <p>「进行可量化的评估试验」下列出的是思路，仓库内没有对应数值报告：</p>
+      <ol>
+        <li>用 KL 散度看模型大小、精度、不同输入对 outlier 的影响。</li>
+        <li>通过对 outlier 做剔除、规范化等操作，观察不同层、不同大小上它的作用。</li>
+        <li>用均方差衡量不同设置下 FFN 各层响应的离散程度。</li>
+        <li>对其他开源 LLM 做相同操作。</li>
+        <li>在训练过程中统计 outlier，并对照多任务指标，探讨与涌现 / 顿悟的关系——README 写明目前没有太好的思路。</li>
+      </ol>
+      <p class="callout plain">
+        <code>benchmark.py</code> 是上游风格的 LAMBADA 评测脚本，依赖仓库中不存在的 <code>misc/lambada_test.jsonl</code>。
+        本页不把它当作本项目的可解释性实验结果。
+      </p>
+    </section>
+
+    <section class="section wrap" id="figures" aria-labelledby="figures-title">
+      <h2 id="figures-title"><span>04</span>仓库内可核验的图片</h2>
+      <p>
+        本仓库根目录只有两张已跟踪的图片：<code>ChatRWKV.png</code> 与 <code>RWKV-eval.png</code>。
+        README 中 1B5 / 7B 的可视化 GIF 在外部图床，<strong>不是本仓库文件</strong>，本页不转载。
+      </p>
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img
+            src="./assets/ChatRWKV.png"
+            alt="Discord 深色界面截图：用户 hazardous1222 以 +rwkv 向名为 Story-Bot 的机器人连续提问，机器人逐条长文回复。此为仓库文件 ChatRWKV.png，展示上游 ChatRWKV 聊天界面，不是本仓库的 FFN 可视化结果。"
+            width="1084"
+            height="1262">
+          <figcaption>
+            <strong>ChatRWKV.png。</strong>
+            上游 ChatRWKV 的 Discord 对话截图。它说明聊天封装存在，但不能用来证明本仓库的 FFN outlier 观察。
+          </figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img
+            src="./assets/RWKV-eval.png"
+            alt="一张评测表截图，表头包含 LAMBADA、AVERAGE 以及多项英文基准列，行中可见 RWKV-4 与若干对照模型名称。此为仓库文件 RWKV-eval.png，README 将其作为上游材料引用。"
+            width="2194"
+            height="495">
+          <figcaption>
+            <strong>RWKV-eval.png。</strong>
+            README 引用的上游评测表截图。本页<strong>不转写、不引用其中任何数字</strong>，也不把它说成是本仓库复现或新跑的分数。
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section wrap" id="findings" aria-labelledby="findings-title">
+      <h2 id="findings-title"><span>05</span>作者写在 README 里的观察</h2>
+      <p>
+        以下三条来自 README「单从可视化结果中可以得到 3 个结论」，并带有作者自己的限定。
+        它们是<strong>可视化层面的作者观察</strong>，不是经过独立复现、也不是经过论文审稿的结论。
+      </p>
+      <div class="grid-3">
+        <article class="card">
+          <h3>观察一</h3>
+          <p>作者认为模型越大，outlier 情况越少。依据是同一提示下对比 7B fp16 与 1B5 fp16，「可直观看出 7B 的 outlier 更小」。</p>
+        </article>
+        <article class="card">
+          <h3>观察二</h3>
+          <p>
+            作者认为量化或精度改变会影响 outlier。
+            依据是 1B5 上对比 fp16 与 fp32：README 写多次试验都感到 fp32 输出更长、效果更好，并猜测「做量化的对齐会保证性能的一致」。
+          </p>
+        </article>
+        <article class="card">
+          <h3>观察三</h3>
+          <p>
+            README 原文写「outlier 的情况会直接影响模型的性能」，并自行括注「并不严谨」。
+            后文又写：精度确实会让 1B5 的 outlier 有区别，但「是否对模型性能有影响要在后面的试验中来演示」。
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="limits" aria-labelledby="limits-title">
+      <h2 id="limits-title"><span>06</span>局限与本页不声称的事</h2>
+      <div class="notice">
+        <p>
+          本仓库没有论文投稿/接收信息，没有可引用的官方分数表，也没有把涌现或顿悟验证完成。
+          若某句话在 README 或代码里找不到依据，本页就不会写。
+        </p>
+      </div>
+      <ul>
+        <li>可视化为主；计划中的 KL / 均方差 / 跨模型对照没有仓库内结果文件。</li>
+        <li>实验 GIF 在 README 以外部链接给出，本站只用两张已跟踪图片。</li>
+        <li><code>chat_interpretability.py</code> 与当前 <code>forward</code> 签名、缺失的 <code>options</code> 模块不一致。</li>
+        <li>运行需要自行从 <a href="https://huggingface.co/BlinkDL">Hugging Face / BlinkDL</a> 下载 <strong>RWKV-4</strong> 权重；README 写明不要使用 RWKV-4a / RWKV-4b。</li>
+        <li>上游说明与训练代码见 <a href="https://github.com/BlinkDL/RWKV-LM">BlinkDL/RWKV-LM</a>。README 还链到 <a href="https://discord.gg/bDSBUMeFpc">RWKV Discord</a> 与一篇 <a href="https://blog.csdn.net/weixin_49139876/article/details/129869814">CSDN 介绍</a>。</li>
+      </ul>
+      <h3>若要在本地看可视化</h3>
+      <p>README「可视化使用方法」写的是：配置 <code>chat.py</code> 约第 48 行的视频路径、尺度和帧率，然后执行 <code>python chat.py</code>。对话一次保存一次。依赖见 <code>requirements.txt</code>（<code>torch==1.13.1</code>，<code>tokenizers&gt;=0.13.2</code>）；脚本另外用到 matplotlib 与 OpenCV。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <nav aria-label="页脚链接">
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research">源代码</a>
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research/blob/main/README.md">仓库 README</a>
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research/blob/main/LICENSE">Apache License 2.0</a>
+        <a href="./README.html">本页依据</a>
+      </nav>
+      <p>
+        预定发布地址
+        <a href="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/">unstoppablecurry.github.io/RWKV-LM-Interpretability-Research</a>。
+        页面只做静态说明。
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
