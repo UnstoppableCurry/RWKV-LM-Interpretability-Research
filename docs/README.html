@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>本页依据 · RWKV-LM 可解释性研究展示</title>
+  <meta name="description" content="说明展示页每一类陈述对应仓库里的哪一段 README 或源码。不新增实验结论。">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/README.html">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="本页依据 · RWKV-LM 可解释性展示">
+  <meta property="og:description" content="展示页陈述与仓库 README / 源码的对照。">
+  <meta property="og:url" content="https://unstoppablecurry.github.io/RWKV-LM-Interpretability-Research/README.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span class="brand-text">
+          <strong>RWKV-LM Interpretability</strong>
+          <span>陈述依据 · 不新增结论</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="页面">
+        <a href="./">展示首页</a>
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research/blob/main/README.md">仓库 README</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <section class="hero">
+      <p class="kicker">Source map</p>
+      <h1>展示页写了什么，依据在哪</h1>
+      <p class="lede">
+        这是给读者核对用的对照页。展示首页上的研究问题、方法、实验和观察，都应能在下列文件里找到原文或实现。
+        若某一条在仓库里找不到，展示页就不该写。
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="map-title">
+      <h2 id="map-title"><span>对照</span>陈述与文件</h2>
+      <article class="card">
+        <h3>研究问题</h3>
+        <p>
+          来自仓库 <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research/blob/main/README.md">README.md</a>
+          的「前言」与「最近研发群里面看到大家在讨论 脑电图」：FFN 可视化、outlier、规模 / 精度，以及与涌现、顿悟的关系。
+          涌现部分 README 写的是尚未有好思路。
+        </p>
+      </article>
+      <article class="card">
+        <h3>方法</h3>
+        <ul class="file-list">
+          <li><code>src/model_run.py</code>：<code>forward</code> 收集 <code>all_ffn_out</code>。</li>
+          <li><code>chat.py</code>：对话循环里用 matplotlib + OpenCV 写 mp4；README 指向约第 48 行的 <code>VideoWriter</code>。</li>
+          <li><code>chat_interpretability.py</code>：<code>interpretability()</code> 计算标准差、方差、<code>torch.kl_div</code>、99% 分位裁剪。</li>
+          <li>缺口也来自源码：<code>forward</code> 没有 <code>outlier</code> 参数；仓库没有 <code>options.py</code>。</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>实验</h3>
+        <p>
+          同一提示、1B5/7B 与 fp16/fp32 对照、输出不可控、7B fp32 未跑，均来自 README「如何得出结论」。
+          定量五条来自 README「进行可量化的评估试验」，原文标题是「思路」。
+        </p>
+      </article>
+      <article class="card">
+        <h3>观察</h3>
+        <p>
+          三条可视化观察逐字对应 README「单从可视化结果中可以得到 3 个结论」及其后的「如何得出」。
+          第三条的「并不严谨」是 README 原文，不是本页添加的评价。
+        </p>
+      </article>
+      <article class="card">
+        <h3>图片</h3>
+        <p>
+          只使用仓库已跟踪的 <code>ChatRWKV.png</code> 与 <code>RWKV-eval.png</code>。
+          前者是 ChatRWKV Discord 截图；后者是 README 引用的上游评测表。
+          本页和首页都不抄写表中数字。
+        </p>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="out-title">
+      <h2 id="out-title"><span>排除</span>本页故意不写的内容</h2>
+      <ul>
+        <li>任何论文投稿、接收编号或引用格式。</li>
+        <li>从 <code>RWKV-eval.png</code> 读出的 LAMBADA / AVERAGE 或其他基准数字。</li>
+        <li>把外部 GIF 说成「本仓库可核验图像」。</li>
+        <li>把 <code>benchmark.py</code> 或缺失的 LAMBADA 数据文件说成已完成评测。</li>
+        <li>把 ChatRWKV 上游 README 里「RNN 可与 Transformer 比质量」等宣传句，写成是本实验的发现。</li>
+      </ul>
+      <p><a href="./">返回展示首页</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <nav aria-label="页脚链接">
+        <a href="./">展示首页</a>
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research">源代码</a>
+        <a href="https://github.com/UnstoppableCurry/RWKV-LM-Interpretability-Research/blob/main/LICENSE">Apache License 2.0</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
